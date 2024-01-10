@@ -70,7 +70,7 @@ async def reminder(context: ContextTypes.DEFAULT_TYPE) -> None:
             text = "Sorry, you lost your Sojourner Streak. Please /start to try again."
             await send_message(context.bot, chat, text)
             removed_chat.append(chat)
-        elif delta_hours >= 24:
+        elif delta_hours >= 24 and (delta_hours >= 30 or delta_hours % 2 == 0):
             if delta_hours < 30:
                 text = (f'You have not hacked any portals in Ingress for *{delta_hours}* hours, '
                         'please hack immediately!')
