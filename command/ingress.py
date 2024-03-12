@@ -63,14 +63,20 @@ async def reminder(context: ContextTypes.DEFAULT_TYPE) -> None:
         if delta_hours == rc['dh'] or rc['dh'] == -1:
             continue
         rc['dh'] = delta_hours
-        if delta_hours >= 36:
+        if delta_hours < 24:
+            if 'alert' in rc:
+                await delete_message(context.bot, chat, rc['alert'])
+                del rc['alert']
+            records.set(chat, rc)
+        elif delta_hours >= 36:
             if 'alert' in rc:
                 await delete_message(context.bot, chat, rc['alert'])
                 del rc["alert"]
             text = "Sorry, you lost your Sojourner Streak. Please /start to try again."
             await send_message(context.bot, chat, text)
             removed_chat.append(chat)
-        elif delta_hours >= 24 and (delta_hours >= 30 or delta_hours % 2 == 0):
+            logger.debug(f'REMOVE {chat}')
+        elif delta_hours >= 30 or delta_hours % 2 == 0:
             if delta_hours < 30:
                 text = (f'You have not hacked any portals in Ingress for *{delta_hours}* hours, '
                         'please hack immediately!')
@@ -83,13 +89,11 @@ async def reminder(context: ContextTypes.DEFAULT_TYPE) -> None:
                     await delete_message(context.bot, chat, rc['alert'])
                 rc['alert'] = msg.message_id
                 records.set(chat, rc)
+                logger.debug(f'ALERT {chat}:{delta_hours}')
             except Exception as e:
                 logger.error(f'Error when sending message to {chat}: {e}')
                 removed_chat.append(chat)
         else:
-            if 'alert' in rc:
-                await delete_message(context.bot, chat, rc['alert'])
-                del rc['alert']
-                records.set(chat, rc)
+            records.set(chat, rc)
     for chat in removed_chat:
         records.delete(chat)
