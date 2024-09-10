@@ -86,7 +86,10 @@ async def channel_del(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         f'chat_id: {chat_id}, action: channel_del, args: {context.args}')
     arg: str = " ".join(context.args)
     if arg == '':
-        await update.effective_message.reply_text('Please provide a URL.\n\n')
+        list_text = 'Notification channels:\n'
+        for channel in channels[chat_id]:
+            list_text += f'{channel}\n'
+        await update.effective_message.reply_text('Please provide a URL.\n\n' + list_text)
         return
     if arg not in channels[chat_id]:
         await update.effective_message.reply_text('Channel not found.')
