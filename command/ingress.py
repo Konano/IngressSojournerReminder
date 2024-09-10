@@ -20,7 +20,7 @@ async def start_reminder(update: Update, context: ContextTypes.DEFAULT_TYPE) -> 
     if chat in records:
         await update.effective_message.reply_text('You have already started.')
         return
-    rc = {'ts': 0, 'dh': -1}
+    rc = {'ts': int(time.time()), 'dh': -1}
     text = \
         "Welcome to use Ingress Sojourner Reminder!\n\n" \
         "This bot will remind you to hack a portal in Ingress to prevent you from losing your Sojourner Streak.\n" \
@@ -61,7 +61,11 @@ async def reminder(context: ContextTypes.DEFAULT_TYPE) -> None:
     for chat in records:
         rc = records[chat]
         delta_hours = (int(time.time()) - rc['ts']) // 60 // 60
-        if delta_hours == rc['dh'] or rc['dh'] == -1:
+        if delta_hours == rc['dh']:
+            continue
+        if rc['dh'] == -1:
+            if delta_hours >= 24:
+                removed_chat.append(chat)
             continue
         rc['dh'] = delta_hours
         if delta_hours < 24:
