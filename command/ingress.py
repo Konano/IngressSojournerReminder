@@ -5,6 +5,7 @@ from telegram.ext import ContextTypes
 
 from base.data import localDict
 from base.log import logger
+from base.debug import eprint
 from base.message import delete_message, send_message
 
 records = localDict('records', digit_mode=True)
@@ -91,8 +92,11 @@ async def reminder(context: ContextTypes.DEFAULT_TYPE) -> None:
                 records.set(chat, rc)
                 logger.info(f'ALERT {chat}:{delta_hours}')
             except Exception as e:
-                logger.error(f'Error when sending message to {chat}: {e}')
-                removed_chat.append(chat)
+                # TODO catch the timeout error and then use the except block to deal with it
+                eprint(e, msg=f'Error when sending message to {chat}')
+                if str(e) != 'Timed out':
+                    # If the error is not a timeout, remove the chat
+                    removed_chat.append(chat)
         else:
             records.set(chat, rc)
     for chat in removed_chat:
