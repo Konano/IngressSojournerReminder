@@ -3,6 +3,7 @@ from telegram import Update
 from telegram.ext import ContextTypes
 
 from base.data import localDict
+from base.debug import eprint
 from base.log import logger
 
 channels = localDict('channels', digit_mode=True)
@@ -98,5 +99,9 @@ async def channel_del(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
 async def channel_notify(chat_id: int, title: str, body: str) -> None:
     if chat_id not in channels:
         return
-    ret = Apprise(servers=channels[chat_id]).notify(title=title, body=body)
-    logger.debug(f'channel_notify: {ret}')
+    try:
+        ret = Apprise(servers=channels[chat_id]).notify(title=title, body=body)
+        logger.debug(f'channel_notify: {ret}')
+    except Exception as e:
+        eprint(e)
+        return
