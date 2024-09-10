@@ -6,6 +6,7 @@ from telegram.ext import (Application, CallbackQueryHandler, CommandHandler,
 from base import network
 from base.config import WEBHOOK, accessToken, heartbeatURL
 from base.log import logger
+from command.notify import channel_list, channel_add, channel_del
 from command.ingress import (already_hacked, cancel_reminder, records,
                              reminder, start_reminder)
 
@@ -46,6 +47,12 @@ def main() -> None:
     app.add_handler(CallbackQueryHandler(already_hacked, pattern='HACK'))
     # 刷新 Ingress 签到时间间隔（命令）
     app.add_handler(CommandHandler('hacked', already_hacked))
+
+    # 列出所有通知渠道
+    app.add_handler(CommandHandler('list', channel_list))
+    # 添加或删除通知渠道
+    app.add_handler(CommandHandler('add', channel_add))
+    app.add_handler(CommandHandler('del', channel_del))
 
     app.run_webhook(**WEBHOOK)
 

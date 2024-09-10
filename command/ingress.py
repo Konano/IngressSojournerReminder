@@ -4,9 +4,10 @@ from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
 
 from base.data import localDict
-from base.log import logger
 from base.debug import eprint
+from base.log import logger
 from base.message import delete_message, send_message
+from command.notify import channel_notify
 
 records = localDict('records', digit_mode=True)
 
@@ -85,13 +86,18 @@ async def reminder(context: ContextTypes.DEFAULT_TYPE) -> None:
             if delta_hours < 30:
                 text = (f'You have not hacked any portals in Ingress for *{delta_hours}* hours, '
                         'please hack immediately!')
+                raw_text = (f'You have not hacked any portals in Ingress for {delta_hours} hours, '
+                            'please hack immediately!')
             else:
-                text = (f'🔴⚠️🔴⚠️🔴\nYou have not hacked any portals in Ingress for *{delta_hours}* hours, '
-                        'please hack immediately!\n🔴⚠️🔴⚠️🔴')
+                text = (f'🔴⚠️🔴⚠️🔴\nYOU HAVE NOT HACKED ANY PORTALS IN INGRESS FOR *{delta_hours}* HOURS, '
+                        'PLEASE HACK IMMEDIATELY!\n🔴⚠️🔴⚠️🔴')
+                raw_text = (f'!!!!!!!! YOU HAVE NOT HACKED ANY PORTALS IN INGRESS FOR {delta_hours} HOURS, '
+                            'PLEASE HACK IMMEDIATELY !!!!!!!!')
             try:
                 msg = await context.bot.send_message(chat, text, reply_markup=SIGNIN_KEYBOARD, parse_mode='Markdown')
                 if 'alert' in rc:
                     await delete_message(context.bot, chat, rc['alert'])
+                await channel_notify(chat, 'Ingress Sojourner Reminder', raw_text)
                 rc['alert'] = msg.message_id
                 records.set(chat, rc)
                 logger.info(f'ALERT {chat}:{delta_hours}')
