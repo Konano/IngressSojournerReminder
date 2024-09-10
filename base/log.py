@@ -20,6 +20,19 @@ class MaxFilter:
             return True
 
 
+class EnhancedRotatingFileHandler(TimedRotatingFileHandler):
+    def __init__(self, filename, when='h', interval=1, backupCount=0, encoding=None, delay=False, utc=False):
+        super().__init__(filename, when, interval, backupCount, encoding, delay, utc)
+
+    def computeRollover(self, currentTime: int):
+        """
+        Work out the rollover time based on the specified time.
+        """
+        if self.when == 'MIDNIGHT' or self.when.startswith('W'):
+            return super().computeRollover(currentTime)
+        return currentTime - currentTime % self.interval + self.interval
+
+
 chlr = logging.StreamHandler(stream=sys.stdout)
 chlr.setFormatter(color_formatter)
 chlr.setLevel('INFO')
@@ -29,13 +42,17 @@ ehlr = logging.StreamHandler(stream=sys.stderr)
 ehlr.setFormatter(color_formatter)
 ehlr.setLevel('WARNING')
 
-fhlr = TimedRotatingFileHandler('log/server', when='H', interval=1, backupCount=24*7)
+fhlr = EnhancedRotatingFileHandler('log/server', when='H', interval=1, backupCount=24*7)
 fhlr.setFormatter(basic_formatter)
 fhlr.setLevel('DEBUG')
 
 # 自行调用 + 模组调用
 logger = logging.getLogger()
 logger.setLevel('INFO')  # 改成 DEBUG 之后，模组自身调用的 logger 也会输出
+logger.addHandler(fhlr)
+
+# 模组调用: apprise
+logger = logging.getLogger('apprise')
 logger.addHandler(fhlr)
 
 # 自行调用
