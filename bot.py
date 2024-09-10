@@ -1,14 +1,14 @@
 from pytz import timezone
-from telegram import Update
+from telegram import BotCommand, BotCommandScopeAllPrivateChats, Update
 from telegram.ext import (Application, CallbackQueryHandler, CommandHandler,
                           ContextTypes, JobQueue)
 
 from base import network
 from base.config import WEBHOOK, accessToken, heartbeatURL
 from base.log import logger
-from command.notify import channel_list, channel_add, channel_del
 from command.ingress import (already_hacked, cancel_reminder, records,
                              reminder, start_reminder)
+from command.notify import channel_add, channel_del, channel_list
 
 
 async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
@@ -38,6 +38,18 @@ def main() -> None:
     jk = {"misfire_grace_time": None}  # job_kwargs
 
     job.run_repeating(heartbeat, interval=60, first=0, job_kwargs=jk)
+
+    async def context_init(context: ContextTypes.DEFAULT_TYPE) -> None:
+        logger.debug("Set bot commands.")
+        await context.bot.set_my_commands([
+            BotCommand('hacked', 'Refresh reminder'),
+            BotCommand('start', 'Start reminder'),
+            BotCommand('cancel', 'Cancel reminder'),
+            BotCommand('list', 'List all notification channels'),
+            BotCommand('add', 'Add a notification channel'),
+            BotCommand('del', 'Delete a notification channel')],
+            scope=BotCommandScopeAllPrivateChats())
+    job.run_once(context_init, 0)
 
     app.add_handler(CommandHandler('start', start_reminder))
     app.add_handler(CommandHandler('cancel', cancel_reminder))
