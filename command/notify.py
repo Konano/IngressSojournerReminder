@@ -92,6 +92,8 @@ async def channel_del(update: Update, context: ContextTypes.DEFAULT_TYPE) -> Non
         await update.effective_message.reply_text('Channel not found.')
         return
     channels[chat_id].remove(arg)
+    if len(channels[chat_id]) == 0:
+        del channels[chat_id]
     channels.dump()
     await update.effective_message.reply_text('Notification channel deleted.')
 
