@@ -2,6 +2,7 @@ import time
 
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
+from telegram.error import Forbidden
 
 from base.data import localDict
 from base.debug import eprint
@@ -101,12 +102,11 @@ async def reminder(context: ContextTypes.DEFAULT_TYPE) -> None:
                 rc['alert'] = msg.message_id
                 records.set(chat, rc)
                 logger.info(f'ALERT {chat}:{delta_hours}')
-            except Exception as e:
-                # TODO catch the timeout error and then use the except block to deal with it
+            except Forbidden as e:
                 eprint(e, msg=f'Error when sending message to {chat}')
-                if str(e) != 'Timed out':
-                    # If the error is not a timeout, remove the chat
-                    removed_chat.append(chat)
+                removed_chat.append(chat)
+            except Exception as e:
+                eprint(e, msg=f'Error when sending message to {chat}')
         else:
             records.set(chat, rc)
     for chat in removed_chat:
