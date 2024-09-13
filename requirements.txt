@@ -1,13 +1,16 @@
 # Core dependencies
-python-telegram-bot[webhooks]~=20.1
-APScheduler~=3.10.1
-pytz>=2018.6
+python-telegram-bot[webhooks]~=20.1  # Telegram bot framework with webhooks support
+APScheduler~=3.10.1  # Advanced Python scheduler for task scheduling
+pytz>=2018.6  # Timezone support for scheduling
 
-# logging
-colorlog~=6.7.0
+# Logging
+colorlog~=6.7.0  # Colored logging for better visibility
 
-# network
-aiohttp~=3.9.1
+# Networking
+aiohttp~=3.9.1  # Async HTTP client/server framework
 
-# notifications
-apprise~=1.9.0
+# Notifications
+apprise~=1.9.0  # Notification library supporting multiple services (e.g., email, SMS, etc.)
+
+# Error Reporting & Monitoring
+sentry-sdk~=2.14.0  # Sentry SDK for error reporting and monitoring

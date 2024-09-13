@@ -4,6 +4,10 @@ from logging.handlers import TimedRotatingFileHandler
 
 import colorlog
 
+from base.sentry import sentry_init
+
+sentry_init()
+
 BASIC_FORMAT = '%(asctime)s - %(levelname)s - %(module)s - %(lineno)d - %(funcName)s - %(message)s'
 COLOR_FORMAT = '%(log_color)s%(asctime)s - %(filename)s:%(lineno)d - %(funcName)s - %(message)s'
 DATE_FORMAT = None
