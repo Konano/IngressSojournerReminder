@@ -30,6 +30,9 @@ class EnhancedRotatingFileHandler(TimedRotatingFileHandler):
         """
         if self.when == 'MIDNIGHT' or self.when.startswith('W'):
             return super().computeRollover(currentTime)
+        if self.when == 'D':
+            # 8 hours ahead of UTC
+            return currentTime - currentTime % self.interval + self.interval - 8 * 3600
         return currentTime - currentTime % self.interval + self.interval
 
 
