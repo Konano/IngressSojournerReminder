@@ -3,7 +3,7 @@ module.exports = {
         name: 'IngressSojourner',
         cmd: 'bot.py',
         interpreter: '/home/ubuntu/.miniconda3/envs/telegram/bin/python3',
-        // autorestart: false,
+        autorestart: true,
         // watch: true,
     }]
 };
