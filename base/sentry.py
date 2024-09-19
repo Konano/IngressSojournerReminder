@@ -15,8 +15,12 @@ def sentry_init():
         return
     SENTRY_INIT = True
 
+    dsn = config['SENTRY'].get('dsn')
+    if dsn is None:
+        return
+
     sentry_sdk.init(
-        dsn=config['SENTRY']['dsn'],
+        dsn=dsn,
         release=datetime.now().strftime('%Y-%m-%d'),
         attach_stacktrace=True,
     )

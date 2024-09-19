@@ -24,7 +24,8 @@ async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
 
 
 async def heartbeat(context: ContextTypes.DEFAULT_TYPE) -> None:
-    await network.get(heartbeatURL)
+    if heartbeatURL is not None:
+        await network.get(heartbeatURL)
 
 
 def main() -> None:
