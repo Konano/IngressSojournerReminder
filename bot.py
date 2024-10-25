@@ -1,3 +1,5 @@
+import logging
+
 from pytz import timezone
 from telegram import BotCommand, BotCommandScopeAllPrivateChats, Update
 from telegram.ext import (Application, CallbackQueryHandler, CommandHandler,
@@ -5,6 +7,7 @@ from telegram.ext import (Application, CallbackQueryHandler, CommandHandler,
 
 from base import network
 from base.config import WEBHOOK, accessToken, heartbeatURL
+from base.debug import try_except
 from base.log import logger
 from command.ingress import (already_hacked, cancel_reminder, records,
                              reminder, start_reminder)
@@ -23,6 +26,7 @@ async def error_handler(update: Update, context: ContextTypes.DEFAULT_TYPE) -> N
         records.delete(update.effective_chat.id)
 
 
+@try_except(level=logging.DEBUG, return_value=False)
 async def heartbeat(context: ContextTypes.DEFAULT_TYPE) -> None:
     if heartbeatURL is not None:
         await network.get(heartbeatURL)
