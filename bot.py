@@ -54,7 +54,7 @@ def main() -> None:
             BotCommand('add', 'Add a notification channel'),
             BotCommand('del', 'Delete a notification channel')],
             scope=BotCommandScopeAllPrivateChats())
-    job.run_once(context_init, 0)
+    job.run_once(context_init, 10)
 
     app.add_handler(CommandHandler('start', start_reminder))
     app.add_handler(CommandHandler('cancel', cancel_reminder))
