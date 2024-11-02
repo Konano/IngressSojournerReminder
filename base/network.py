@@ -43,7 +43,7 @@ def attempt(times: int):
 
 
 @attempt(3)
-async def get(url: str, timeout: float = 30, **kwargs) -> bytes:
+async def get(url: str, timeout: float = 15, **kwargs) -> bytes:
     timeout = aiohttp.ClientTimeout(total=timeout)
     async with aiohttp.request('GET', url, timeout=timeout, **kwargs) as r:
         content = await r.read()
@@ -51,14 +51,14 @@ async def get(url: str, timeout: float = 30, **kwargs) -> bytes:
 
 
 @attempt(3)
-async def get_noreturn(url: str, timeout: float = 30, **kwargs) -> None:
+async def get_noreturn(url: str, timeout: float = 15, **kwargs) -> None:
     timeout = aiohttp.ClientTimeout(total=timeout)
     async with aiohttp.request('GET', url, timeout=timeout, **kwargs) as r:
         await r.read()
 
 
 @attempt(3)
-async def get_str(url: str, timeout: float = 30, **kwargs) -> str:
+async def get_str(url: str, timeout: float = 15, **kwargs) -> str:
     timeout = aiohttp.ClientTimeout(total=timeout)
     async with aiohttp.request('GET', url, timeout=timeout, **kwargs) as r:
         content = await r.text()
@@ -68,7 +68,7 @@ async def get_str(url: str, timeout: float = 30, **kwargs) -> str:
 
 
 @attempt(3)
-async def get_json(url: str, timeout: float = 30, **kwargs) -> dict | list:
+async def get_json(url: str, timeout: float = 15, **kwargs) -> dict | list:
     timeout = aiohttp.ClientTimeout(total=timeout)
     async with aiohttp.request('GET', url, timeout=timeout, **kwargs) as r:
         data = await r.json()
@@ -78,7 +78,7 @@ async def get_json(url: str, timeout: float = 30, **kwargs) -> dict | list:
 # ==================== POST ====================
 
 @attempt(3)
-async def post(url: str, data, timeout: float = 30, **kwargs) -> bytes:
+async def post(url: str, data, timeout: float = 15, **kwargs) -> bytes:
     timeout = aiohttp.ClientTimeout(total=timeout)
     async with aiohttp.request('POST', url, data=data, timeout=timeout, **kwargs) as r:
         content = await r.read()
@@ -86,7 +86,7 @@ async def post(url: str, data, timeout: float = 30, **kwargs) -> bytes:
 
 
 @attempt(3)
-async def post_json(url: str, data, timeout: float = 30, **kwargs) -> bytes:
+async def post_json(url: str, data, timeout: float = 15, **kwargs) -> bytes:
     timeout = aiohttp.ClientTimeout(total=timeout)
     async with aiohttp.request('POST', url, data=data, timeout=timeout, **kwargs) as r:
         data = await r.json()
@@ -94,7 +94,7 @@ async def post_json(url: str, data, timeout: float = 30, **kwargs) -> bytes:
 
 
 @attempt(3)
-async def post_status(url: str, data, timeout: float = 30, **kwargs) -> tuple[dict, int]:
+async def post_status(url: str, data, timeout: float = 15, **kwargs) -> tuple[dict, int]:
     timeout = aiohttp.ClientTimeout(total=timeout)
     async with aiohttp.request('POST', url, data=data, timeout=timeout, **kwargs) as r:
         content = await r.text()
