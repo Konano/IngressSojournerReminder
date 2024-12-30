@@ -1,6 +1,8 @@
 import logging
 import sys
+from logging import Filter, StreamHandler
 from logging.handlers import TimedRotatingFileHandler
+from typing import Any
 
 import colorlog
 
@@ -8,14 +10,15 @@ from base.sentry import sentry_init
 
 sentry_init()
 
-BASIC_FORMAT = '%(asctime)s - %(levelname)s - %(module)s - %(lineno)d - %(funcName)s - %(message)s'
+
+BASIC_FORMAT = '%(asctime)s - %(levelname)s - %(name)s - %(module)s - %(lineno)d - %(funcName)s - %(message)s'
 COLOR_FORMAT = '%(log_color)s%(asctime)s - %(filename)s:%(lineno)d - %(funcName)s - %(message)s'
 DATE_FORMAT = None
 basic_formatter = logging.Formatter(BASIC_FORMAT, DATE_FORMAT)
 color_formatter = colorlog.ColoredFormatter(COLOR_FORMAT, DATE_FORMAT)
 
 
-class MaxFilter:
+class MaxFilter(Filter):
     def __init__(self, max_level):
         self.max_level = max_level
 
@@ -36,34 +39,42 @@ class EnhancedRotatingFileHandler(TimedRotatingFileHandler):
             return super().computeRollover(currentTime)
         if self.when == 'D':
             # 8 hours ahead of UTC
-            return currentTime - currentTime % self.interval + self.interval - 8 * 3600
+            return currentTime - (currentTime + 8 * 3600) % self.interval + self.interval
         return currentTime - currentTime % self.interval + self.interval
 
 
-chlr = logging.StreamHandler(stream=sys.stdout)
+chlr = StreamHandler(stream=sys.stdout)
 chlr.setFormatter(color_formatter)
 chlr.setLevel('INFO')
 chlr.addFilter(MaxFilter(logging.INFO))
 
-ehlr = logging.StreamHandler(stream=sys.stderr)
+ehlr = StreamHandler(stream=sys.stderr)
 ehlr.setFormatter(color_formatter)
 ehlr.setLevel('WARNING')
 
-fhlr = EnhancedRotatingFileHandler('log/server', when='H', interval=1, backupCount=24*7)
+fhlr = EnhancedRotatingFileHandler('log/server.log', when='H', interval=1, backupCount=24*7)
 fhlr.setFormatter(basic_formatter)
 fhlr.setLevel('DEBUG')
 
-# 自行调用 + 模组调用
+# 日志默认设置
 logger = logging.getLogger()
-logger.setLevel('INFO')  # 改成 DEBUG 之后，模组自身调用的 logger 也会输出
+logger.setLevel('INFO')
 logger.addHandler(fhlr)
 
-# 模组调用: apprise
-logger = logging.getLogger('apprise')
-logger.addHandler(fhlr)
+# 模组调用: telegram
+logger = logging.getLogger('telegram')
+logger.setLevel('DEBUG')
+
+# # 模组调用: apscheduler
+# logger = logging.getLogger('apscheduler')
+# logger.setLevel('DEBUG')
+
+# # 模组调用: apprise
+# logger = logging.getLogger('apprise')
+# logger.setLevel('DEBUG')
 
 # 自行调用
-logger = logging.getLogger(__name__)
+logger = logging.getLogger('main')
 logger.setLevel('DEBUG')
 logger.addHandler(chlr)
 logger.addHandler(ehlr)
