@@ -86,12 +86,12 @@ async def reminder(context: ContextTypes.DEFAULT_TYPE) -> None:
         elif delta_hours >= 30 or delta_hours % 2 == 0:
             if delta_hours < 30:
                 text = (f'You have not hacked any portals in Ingress for *{delta_hours}* hours, '
-                        'please hack immediately!')
+                        '[please hack immediately!](https://link.ingress.com/)')
                 raw_text = (f'You have not hacked any portals in Ingress for {delta_hours} hours, '
                             'please hack immediately!')
             else:
                 text = (f'🔴⚠️🔴⚠️🔴\nYOU HAVE NOT HACKED ANY PORTALS IN INGRESS FOR *{delta_hours}* HOURS, '
-                        'PLEASE HACK IMMEDIATELY!\n🔴⚠️🔴⚠️🔴')
+                        '[PLEASE HACK IMMEDIATELY!](https://link.ingress.com/)\n🔴⚠️🔴⚠️🔴')
                 raw_text = (f'!!!!!!!! YOU HAVE NOT HACKED ANY PORTALS IN INGRESS FOR {delta_hours} HOURS, '
                             'PLEASE HACK IMMEDIATELY !!!!!!!!')
             try:
