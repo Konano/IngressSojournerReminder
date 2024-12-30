@@ -15,22 +15,22 @@ def sentry_init():
         return
     SENTRY_INIT = True
 
-    if 'SENTRY' not in config or config['SENTRY'].get('dsn') is None:
+    if not config.has_option('sentry', 'dsn'):
         return
 
     sentry_sdk.init(
-        dsn=config['SENTRY']['dsn'],
+        dsn=config.get('sentry', 'dsn'),
         release=datetime.now().strftime('%Y-%m-%d'),
         attach_stacktrace=True,
         # Set traces_sample_rate to 1.0 to capture 100%
         # of transactions for tracing.
         traces_sample_rate=1.0,
-        _experiments={
-            # Set continuous_profiling_auto_start to True
-            # to automatically start the profiler on when
-            # possible.
-            "continuous_profiling_auto_start": True,
-        },
+        # _experiments={
+        #     # Set continuous_profiling_auto_start to True
+        #     # to automatically start the profiler on when
+        #     # possible.
+        #     "continuous_profiling_auto_start": True,
+        # },
     )
 
     shlr = SentryHandler()
